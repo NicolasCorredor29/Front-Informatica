@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from '../components/Button';
-import { useAuth } from '../context/AuthContext';
+
 
 interface LoginProps {
   onNavigate: (page: string) => void;
@@ -15,27 +15,20 @@ function validate(email: string, password: string) {
   return errs;
 }
 
-export function Login({ onNavigate, onSuccess }: LoginProps) {
-  const { login } = useAuth();
+export function Login({ onNavigate }: LoginProps) {
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<{ email?: string; password?: string; general?: string }>({});
-  const [loading, setLoading] = useState(false);
+  const loading = false;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const errs = validate(email, password);
+    const errs = validate(email.trim(), password);
     if (Object.keys(errs).length) { setErrors(errs); return; }
     setErrors({});
-    setLoading(true);
-    const result = login(email, password);
-    setLoading(false);
-    if (!result.success) {
-      setErrors({ general: result.error });
-    } else {
-      onSuccess();
-    }
+    setErrors({ general: 'El inicio de sesión estará disponible cuando se implemente la autenticación del servicio. No se enviaron datos.' });
   };
 
   return (
@@ -93,7 +86,7 @@ export function Login({ onNavigate, onSuccess }: LoginProps) {
             <div className="flex flex-col gap-1.5">
               <label htmlFor="email" className="text-sm font-medium text-gray-700">Correo electrónico</label>
               <input
-                id="email"
+                id="email" name="email" autoComplete="email" maxLength={150} required
                 type="email"
                 value={email}
                 onChange={(e) => { setEmail(e.target.value); setErrors((p) => ({ ...p, email: undefined })); }}
@@ -112,7 +105,7 @@ export function Login({ onNavigate, onSuccess }: LoginProps) {
               </div>
               <div className="relative">
                 <input
-                  id="password"
+                  id="password" name="password" autoComplete="current-password" required
                   type={showPassword ? 'text' : 'password'}
                   value={password}
                   onChange={(e) => { setPassword(e.target.value); setErrors((p) => ({ ...p, password: undefined })); }}
@@ -168,3 +161,4 @@ export function Login({ onNavigate, onSuccess }: LoginProps) {
     </div>
   );
 }
+
